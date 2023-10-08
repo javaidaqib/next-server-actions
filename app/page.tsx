@@ -1,30 +1,36 @@
-import { UserType } from "@/typings";
+import { TUserSchema, userSchema } from "./types";
 import Form from "../components/Form";
 import Users from "../components/Users";
+import { useCallback } from "react";
 
-export default async function Home() {
-  const response = await fetch(
-    "https://651ab486340309952f0db99a.mockapi.io/users",
-    {
+export default function Home() {
+  const fetchAllUsers = useCallback(async () => {
+    "use server";
+    const response = await fetch(`${process.env.DB_BASE_URL}/users`, {
       cache: "no-cache",
       next: {
         tags: ["users"],
       },
+    });
+
+    const users: TUserSchema[] = await response.json();
+    const validatedUsers = userSchema?.safeParse(users[0]);
+
+    if (!validatedUsers.success) {
+      console.error(validatedUsers.error);
+      return <></>;
+    } else {
+      return (
+        <div className="">
+          <div className="flex flex-col items-center justify-center space-y-8 mt-10">
+            <h1 className="font-bold text-[32px]">User Info</h1>
+            <Form />
+          </div>
+          {validatedUsers.success ? <Users users={users} /> : null}
+        </div>
+      );
     }
-  );
+  }, []);
 
-  const users: UserType[] = await response.json();
-
-  return (
-    <div className="">
-      <div className="flex flex-col items-center justify-center space-y-8 mt-10">
-        <h1 className="font-bold text-[32px]">User Database</h1>
-        {/* Form */}
-        <Form />
-      </div>
-
-      {/* Users Info */}
-      <Users users={users} />
-    </div>
-  );
+  return fetchAllUsers();
 }

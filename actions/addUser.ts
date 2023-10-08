@@ -1,6 +1,6 @@
 "use server";
 
-import { UserType } from "@/typings";
+import { TUserSchema } from "@/app/types";
 import { revalidateTag } from "next/cache";
 
 export const addUserToDatabase = async (e: FormData) => {
@@ -9,14 +9,14 @@ export const addUserToDatabase = async (e: FormData) => {
 
     if (!name || !email) return;
 
-    const userData: UserType = {
+    const userData: TUserSchema = {
       name,
       email,
     };
 
     try {
       const response = await fetch(
-        "https://651ab486340309952f0db99a.mockapi.io/users",
+        `${process.env.DB_BASE_URL}/users`,
         {
           method: "POST",
           body: JSON.stringify(userData),

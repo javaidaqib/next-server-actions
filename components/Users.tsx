@@ -1,9 +1,9 @@
-import { UserType } from "@/typings";
+import { TUserSchema } from "../app/types";
 import User from "./User";
 
-interface UsersProps {
-  users: UserType[];
-}
+type UsersProps = {
+  users: TUserSchema[];
+};
 
 const Users = ({ users }: UsersProps) => {
   return (
@@ -12,7 +12,7 @@ const Users = ({ users }: UsersProps) => {
 
       {/* Map all user details */}
       <div className="mt-6 flex flex-wrap items-center justify-center">
-        {users.map((user) => (
+        {users.map((user: TUserSchema) => (
           <div key={user.id}>
             {/* Individual User information */}
             <User user={user} />
